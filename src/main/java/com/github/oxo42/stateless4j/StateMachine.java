@@ -193,6 +193,7 @@ public class StateMachine<S, T> {
 
         TriggerBehaviour<S, T> triggerBehaviour = getCurrentRepresentation().tryFindHandler(trigger);
         if (triggerBehaviour == null) {
+            logger.info("Unhandled trigger " + trigger + " in state " + getCurrentRepresentation().getUnderlyingState());
             unhandledTriggerAction.doIt(getCurrentRepresentation().getUnderlyingState(), trigger);
             return;
         }
@@ -202,9 +203,15 @@ public class StateMachine<S, T> {
         if (triggerBehaviour.resultsInTransitionFrom(source, args, destination)) {
             Transition<S, T> transition = new Transition<>(source, destination.get(), trigger);
 
+            logger.info("Trigger " + trigger + " results in a transition from " + transition.getSource() + " to " + transition.getDestination());
+
             getCurrentRepresentation().exit(transition);
             setState(destination.get());
             getCurrentRepresentation().enter(transition, args);
+        }
+        else
+        {
+            logger.info("Trigger " + trigger + " did not result in any transition from " + source);
         }
     }
 
