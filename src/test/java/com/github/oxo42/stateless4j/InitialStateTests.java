@@ -26,6 +26,18 @@ public class InitialStateTests {
     }
 
     @Test
+    public void testInitialStateEntryActionNotExecutedIfDisabled() {
+        final State initial = State.B;
+
+        StateMachineConfig<State, Trigger> config = config(initial);
+        config.disableEntryActionOfInitialState();
+
+        StateMachine<State, Trigger> sm = new StateMachine<>(initial, config);
+        assertEquals(initial, sm.getState());
+        assertFalse(executed);
+    }
+
+    @Test
     public void testInitialStateEntryActionExecuted() {
         final State initial = State.B;
         
@@ -56,7 +68,7 @@ public class InitialStateTests {
 
         StateMachineConfig<State, Trigger> config = new StateMachineConfig<>();
 
-        TriggerWithParameters1<Object, State, Trigger> trigger =
+        TriggerWithParameters1<Object, Trigger> trigger =
                 config.setTriggerParameters(Trigger.X, Object.class);
 
         config.configure(initial)
